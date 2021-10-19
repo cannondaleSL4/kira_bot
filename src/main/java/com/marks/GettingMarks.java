@@ -108,10 +108,14 @@ public class GettingMarks {
         HttpResponse<byte[]> response = httpClient.send(request, HttpResponse.BodyHandlers.ofByteArray());
         Map<String,List<String>> mapFromRequest = parseXlsAnswer(response.body());
         ObjectMapper objectMapper = new ObjectMapper();
+
+        if (!Files.exists(Path.of(RESULT))) {
+            saveInfFile(objectMapper.writeValueAsString(mapFromRequest));
+            return mapFromRequest;
+        }
+
         String fromFile = Files.readString(Path.of(RESULT));
-
         Map<String, List<String>> mapFromFile = objectMapper.readValue(fromFile, HashMap.class);
-
         MapDifference<String, List> diff = Maps.difference(mapFromRequest, mapFromFile);
         Map<String, List<String>> diffMap = new HashMap<>();
 
@@ -123,11 +127,15 @@ public class GettingMarks {
                 });
 
         if(diffMap.size() != 0){
-            String json = objectMapper.writeValueAsString(mapFromRequest);
-//            Files.writeString(Path.of(RESULT), json);
+            saveInfFile(objectMapper.writeValueAsString(mapFromRequest));
             return diffMap;
         }
         return new HashMap<>();
+    }
+
+    @SneakyThrows
+    private void saveInfFile(String json) {
+        Files.writeString(Path.of(RESULT), json);
     }
 
     @SneakyThrows

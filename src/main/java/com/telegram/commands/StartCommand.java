@@ -15,6 +15,6 @@ public class StartCommand extends ServiceCommand {
         String userName = (user.getUserName() != null) ? user.getUserName() :
                 String.format("%s %s", user.getLastName(), user.getFirstName());
         sendAnswer(absSender, chat.getId(), this.getCommandIdentifier(), userName,
-                "Давайте начнём! Если Вам нужна помощь, нажмите /help");
+                "Lets go to start! If you need help  - please type /help");
     }
 }
